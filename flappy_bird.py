@@ -21,6 +21,35 @@ fps = 60
 clock = pygame.time.Clock()
 gameover = False
 
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self,x,y,pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("pipe.png")
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x,y]
+        
+        # pos1 is top pos-1 is from bottom
+        if pos == 1:
+            self.image = pygame.transform.flip(self.image,False,True)
+            self.rect.bottomleft = [x,y]
+        if pos == -1:
+            self.rect.topleft = [x,y]
+
+    
+
+    def update(self):
+        self.rect.x -= scroll_speed
+
+        if self.rect.right < 0:
+            self.kill()
+
+            
+
+        
+
+
+
+
 class Birb(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -76,7 +105,12 @@ class Birb(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.images[self.index],-90)
         
 birb_group = pygame.sprite.Group()
+pipe_group = pygame.sprite.Group()
 
+bottom_pipe = Pipe(300,int(HEIGTH/2),-1)
+top_pipe = Pipe(300,int(HEIGTH/2),1)
+pipe_group.add(bottom_pipe)
+pipe_group.add(top_pipe)
 flappy = Birb(100,int(HEIGTH/2))
 birb_group.add(flappy)
 
@@ -86,6 +120,10 @@ while True:
 
     birb_group.draw(screen)
     birb_group.update()
+
+    pipe_group.update()
+    pipe_group.draw(screen)
+    
 
     screen.blit(ground,(ground_scroll,768))
     if flappy.rect.bottom > 768:
